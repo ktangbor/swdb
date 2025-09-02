@@ -34,7 +34,7 @@ class Film(Base):
                               back_populates="films",
                               lazy="selectin"
                               )
-    starships = relationship("Starship",
-                             secondary=film_starship,
-                             back_populates="films",
-                             lazy="selectin")
+    # starships = relationship("Starship",
+    #                          secondary=film_starship,
+    #                          back_populates="films",
+    #                          lazy="selectin")

@@ -5,10 +5,8 @@ import httpx
 from swdb_app.models.film import Film
 from swdb_app.dto.film import FilmCreate, FilmInDB
 from swdb_app.repos.film import FilmRepository
-from swdb_app.services.character import CharacterService
 from swdb_app.utils.endpoints import SWAPI_FILMS_LIST_ENDPOINT
-from swdb_app.utils.helper import (film_swapi_to_dto,
-                                   character_swapi_to_dto)
+from swdb_app.utils.helper import film_swapi_to_dto
 
 
 class FilmService:
@@ -21,42 +19,24 @@ class FilmService:
 
     @staticmethod
     async def fetch_all(session: AsyncSession) -> (int, int):
-        fetched_films = 0
-        fetched_characters = 0
-        async with (httpx.AsyncClient() as client):
+        films = []
+        async with (httpx.AsyncClient(verify=False) as client):
             url = SWAPI_FILMS_LIST_ENDPOINT
             while url:
                 response = await client.get(url)
-                results = response.json()
-                for film in results:
+                response_dict = response.json()
+                for film in response_dict["results"]:
                     try:
                         created_film = \
                             await FilmService.create_film(
                                 session,
                                 film_swapi_to_dto(film))
-                        if created_film:
-                            fetched_films += 1
-                    except (IntegrityError, SQLAlchemyError):
+                        films.append((created_film, film.get("characters")))
+                    except (IntegrityError, SQLAlchemyError) as e:
+                        print(str(e))
                         continue
-                    for char_url in film["characters"]:
-                        char_response = await client.get(char_url)
-                        char_results = char_response.json()
-                        for char in char_results:
-                            try:
-                                created_char = await \
-                                    CharacterService.create_character(
-                                        session,
-                                        character_swapi_to_dto(char))
-                                if created_char:
-                                    fetched_characters += 1
-                                if created_char not in \
-                                        created_film.characters:
-                                    created_film.characters.append(
-                                        created_char)
-                            except (IntegrityError, SQLAlchemyError):
-                                continue
-                url = results.get("next")
-        return fetched_characters, fetched_films
+                url = response_dict.get("next")
+        return films
 
     @staticmethod
     async def get_all(session: AsyncSession,

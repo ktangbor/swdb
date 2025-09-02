@@ -23,10 +23,8 @@ class CharacterService:
 
     @staticmethod
     async def fetch_all(session: AsyncSession) -> (int, int):
-        fetched_characters = 0
-        fetched_films = 0
-        # fetched_starships = 0
-        async with httpx.AsyncClient() as client:
+        characters = []
+        async with httpx.AsyncClient(verify=False) as client:
             url = SWAPI_PEOPLE_LIST_ENDPOINT
             while url:
                 response = await client.get(url)
@@ -37,42 +35,11 @@ class CharacterService:
                             await CharacterService.create_character(
                                 session,
                                 character_swapi_to_dto(character))
-                        if created_char:
-                            fetched_characters += 1
+                        characters.append((created_char, character["films"]))
                     except (IntegrityError, SQLAlchemyError):
                         continue
-                    for film_url in character["films"]:
-                        film_response = await client.get(film_url)
-                        film_results = film_response.json()
-                        for film in film_results:
-                            try:
-                                created_film = \
-                                    await FilmService.create_film(
-                                        session,
-                                        film_swapi_to_dto(film))
-                                if created_film:
-                                    fetched_films += 1
-                                if created_film not in created_char.films:
-                                    created_char.films.append(created_film)
-                            except (IntegrityError, SQLAlchemyError):
-                                continue
-                    # for ship_url in character["starships"]:
-                    #     ship_response = await client.get(ship_url)
-                    #     ship_results = ship_response.json()
-                    #     for starship in ship_results:
-                    #         try:
-                    #             created_ship = await \
-                    #                 StarshipService.create_starship(
-                    #                     session,
-                    #                     starship_swapi_to_dto(starship))
-                    #             if created_ship:
-                    #                 fetched_starships += 1
-                    #             if created_ship not in created_char.starships:
-                    #                 created_char.starships.append(created_ship)
-                    #         except (IntegrityError, SQLAlchemyError):
-                    #             continue
                 url = results.get("next")
-        return fetched_characters, fetched_films
+        return characters
 
     @staticmethod
     async def get_all(session: AsyncSession,

@@ -35,7 +35,7 @@ class Character(Base):
                          secondary=film_character,
                          back_populates="characters",
                          lazy="selectin")
-    starships = relationship("Starship",
-                             secondary=character_starship,
-                             back_populates="pilots",
-                             lazy="selectin")
+    # starships = relationship("Starship",
+    #                          secondary=character_starship,
+    #                          back_populates="pilots",
+    #                          lazy="selectin")
