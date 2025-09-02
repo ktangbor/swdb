@@ -1,5 +1,5 @@
 from sqlalchemy import (Column, Integer, String, Date, DateTime,
-                        ARRAY)
+                        ARRAY, func)
 from sqlalchemy.orm import relationship
 
 from swdb_app.db.session import Base
@@ -11,15 +11,20 @@ class Film(Base):
     __tablename__ = "films"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, nullable=False)
+    title = Column(String, unique=True, nullable=False)
     episode_id = Column(Integer, nullable=False)
-    opening_crawl = Column(String, nullable=False)
-    director = Column(String, nullable=False)
-    producer = Column(String, nullable=False)
     release_date = Column(Date, nullable=False)
     url = Column(String, unique=True, nullable=False)
-    created = Column(DateTime, nullable=False)
-    edited = Column(DateTime, nullable=False)
+    opening_crawl = Column(String)
+    director = Column(String)
+    producer = Column(String)
+    created = Column(DateTime(timezone=True),
+                     server_default=func.now(),
+                     nullable=False)
+    edited = Column(DateTime(timezone=True),
+                    server_default=func.now(),
+                    onupdate=func.now(),
+                    nullable=False)
     species = Column(ARRAY(String))
     vehicles = Column(ARRAY(String))
     planets = Column(ARRAY(String))

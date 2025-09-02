@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/StarWarsDB.iml" filepath="$PROJECT_DIR$/.idea/StarWarsDB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/swdb.iml" filepath="$PROJECT_DIR$/.idea/swdb.iml" />
     </modules>
   </component>
 </project>
