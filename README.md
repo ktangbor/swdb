@@ -29,6 +29,9 @@ First run in terminal `poetry install` to install the dependencies.
 Then, with docker running run 
 `docker-compose up -d`.
 
+When the Postgres DB container is up and running, apply the migrations
+`poetry run alembic upgrade head`.
+
 Finally, run `poetry run uvicorn swdb_app.main:app --reload` to run the FastAPI server.
 
 You then can make calls like so `POST http://127.0.0.1:8000/characters/fetch-all` in Postman, or any way you prefer.

@@ -1,6 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from swdb_app.models.character import Character
 from swdb_app.services.character import CharacterService
 from swdb_app.services.film import FilmService
+from swdb_app.utils.helper import character_swapi_to_dto
 import httpx
 
 
@@ -14,10 +17,21 @@ class OrchestratorService:
             for char_url in char_urls:
                 # ideally we should check db first to avoid extra api calls
                 async with (httpx.AsyncClient(verify=False) as client):
-                    character = await client.get(char_url).json()
-                if character not in film.characters:
-                    film.characters.append(character)
-                    characters_count += 1
+                    character_resp = await client.get(char_url)
+                    character_json = character_resp.json()
+                character_orm = await session.scalar(
+                    select(Character).where(
+                        Character.url == character_json["url"])
+                )
+                if character_orm is None:
+                    character_dto = character_swapi_to_dto(character_json)
+                    character_orm = await CharacterService.create_character(
+                        session, character_dto)
+                #  remove following, and replace with a repo that flushes
+                #  changes and catches Integrity errors
+                # if character not in film.characters:
+                #     film.characters.append(character)
+                #     characters_count += 1
         return characters_count, len(films)
 
     @staticmethod

@@ -5,7 +5,7 @@ from datetime import date, datetime
 @dataclass
 class FilmBaseDTO:
     title: str
-    episode_id: str
+    episode_id: int
     release_date: date
     url: str
     opening_crawl: str | None
@@ -16,7 +16,7 @@ class FilmBaseDTO:
     planets: list | None
 
     @staticmethod
-    def model_to_dto(model_data) -> "FilmDTO":
+    def model_to_dto(model_data) -> "FilmBaseDTO":
         fields = {f.name for f in
                   FilmBaseDTO.__dataclass_fields__.values()}
         data = {k: getattr(model_data, k) for k in fields if

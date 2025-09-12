@@ -10,9 +10,9 @@ class FilmBase(BaseModel):
     opening_crawl: str | None = Field(...)
     director: str | None = Field(...)
     producer: str | None = Field(...)
-    species: list | None = Field(...)
-    vehicles: list | None = Field(...)
-    planets: list | None = Field(...)
+    species: list[str] = Field(default_factory=list)
+    vehicles: list[str] = Field(default_factory=list)
+    planets: list[str] = Field(default_factory=list)
 
 
 class FilmCreate(FilmBase):
