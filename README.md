@@ -3,7 +3,7 @@ A RESTful API based on SWAPI.
 
 The current project is an async FastAPI API with PostgreSQL as the database.
 
-It uses poetry for dependencies management.
+It uses uv for dependencies management.
 
 The PostgreSQL is run through a docker container.
 
@@ -22,16 +22,16 @@ Unfortunately, the endpoints need some refinement and are not fully functional.
 
 However, the structure is solid and fully extendable. We use repository pattern, separation of concerns, dependency injection, versioned Pydantic schemas and routes, internal DTOs for decoupling servicers from schemas, and generally adheres closely to SOLID principles.
 
-To run the API you need Docker running and poetry.
+To run the API you need Docker running and uv.
 
-First run in terminal `poetry install` to install the dependencies.
+First run in terminal `uv sync` to install the dependencies.
 
 Then, with docker running run 
 `docker-compose up -d`.
 
 When the Postgres DB container is up and running, apply the migrations
-`poetry run alembic upgrade head`.
+`uv run alembic upgrade head`.
 
-Finally, run `poetry run uvicorn swdb_app.main:app --reload` to run the FastAPI server.
+Finally, run `uv run uvicorn swdb_app.main:app --reload` to run the FastAPI server.
 
 You then can make calls like so `POST http://127.0.0.1:8000/characters/fetch-all` in Postman, or any way you prefer.
