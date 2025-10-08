@@ -4,7 +4,6 @@ from datetime import datetime
 
 @dataclass
 class CharacterBaseDTO:
-    username: str
     name: str
     birth_year: str
     gender: str
